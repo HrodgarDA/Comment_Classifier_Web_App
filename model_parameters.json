@@ -1,0 +1,1 @@
+{"MAX_WORDS": 10000, "MAX_LENGTH": 200, "label_columns": ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]}
