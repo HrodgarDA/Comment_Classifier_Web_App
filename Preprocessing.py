@@ -3,10 +3,10 @@ import pickle
 import json
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from comments_preprocessing import preprocess_text
+from Comments_Preprocessing import preprocess_text
 
 # Definisci il percorso della directory dove sono salvati i file del modello
-model_dir = 'path/to/model/directory'
+model_dir = '/Users/rugg/Documents/GitHub/Comment_Classifier_Web_App/toxic_comment_model.h5'
 
 # Carica il modello
 model = tf.keras.models.load_model(os.path.join(model_dir, 'RNN_model.h5'))
@@ -16,7 +16,7 @@ with open(os.path.join(model_dir, 'tokenizer.pickle'), 'rb') as handle:
     tokenizer = pickle.load(handle)
 
 # Carica la configurazione
-with open(os.path.join(model_dir, 'config.json'), 'r') as f:
+with open(os.path.join(model_dir, 'model_parameters.json'), 'r') as f:
     config = json.load(f)
 
 MAX_LENGTH = config['MAX_LENGTH']
