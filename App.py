@@ -10,8 +10,8 @@ from Preprocessing import preprocess_text, predict_toxicity, load_resources, pre
 # ---------------------- Applying Custom Theme ----------------------
 
 st.set_page_config(
-    page_title="My App",
-    page_icon="🧊",
+    page_title="LSTM Classifier Web App",
+    page_icon="🇮🇹",
     layout="wide",
     initial_sidebar_state="expanded",
 )
