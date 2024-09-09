@@ -1,36 +1,31 @@
-import os
+import re
+import nltk
+from nltk.corpus import stopwords
 import pickle
 import json
-import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from Comments_Preprocessing import preprocess_text
 
 nltk.download('stopwords')
 
-#model path
-model_dir_path = '/Users/rugg/Documents/GitHub/Comment_Classifier_Web_App/toxic_comment_model.h5'
+def load_resources():
+    with open('../model/tokenizer.pickle', 'rb') as handle:
+        tokenizer = pickle.load(handle)
+    with open('../model/config.json', 'r') as f:
+        config = json.load(f)
+    return tokenizer, config
 
-#Loading
-model = tf.keras.models.load_model(os.path.join(model_dir_path, 'RNN_model.h5')) #Model
-
-with open(os.path.join(model_dir_path, 'tokenizer.pickle'), 'rb') as handle: #Tokenizer
-    tokenizer = pickle.load(handle)
-
-with open(os.path.join(model_dir_path, 'model_parameters.json'), 'r') as f: #Parameters
-    config = json.load(f)
-
-MAX_LENGTH = config['MAX_LENGTH']
-label_columns = config['label_columns']
-
-#Custom functions
-
-def preprocess_text(text):  #lower case conversion, Removal of special characters and stopwords
+def preprocess_text(text):
     text = text.lower()
     text = re.sub(r'[^a-zA-Z\s]', '', text)
     stop_words = set(stopwords.words('english'))
     text = ' '.join([word for word in text.split() if word not in stop_words])
-
     return text
+
+def prepare_input(text, tokenizer, config):
+    cleaned_text = preprocess_text(text)
+    sequence = tokenizer.texts_to_sequences([cleaned_text])
+    padded_sequence = pad_sequences(sequence, maxlen=config['MAX_LENGTH'])
+    return padded_sequence
 
 def predict_toxicity(text): #Prediction function
     cleaned = preprocess_text(text)
@@ -48,3 +43,7 @@ def predict_toxicity(text): #Prediction function
         print(f"The text sample provided is classified as: {positive_classes}")
 
     return binary_prediction, positive_classes
+
+
+
+
