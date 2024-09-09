@@ -1,6 +1,9 @@
-import streamlit as st
-import tensorflow as tf
+
 from Preprocessing import preprocess_text, predict_toxicity, load_resources, prepare_input
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Sopprime gli avvisi TensorFlow
+import tensorflow as tf
+import streamlit as st
 
 # Load model and resources
 @st.cache_resource
