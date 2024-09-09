@@ -7,10 +7,13 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 nltk.download('stopwords')
 
+tokenizer_path = '/Users/rugg/Documents/GitHub/Comment_Classifier_Web_App/Tokenizer.pickle'
+parameters_path = '/Users/rugg/Documents/GitHub/Comment_Classifier_Web_App/Parameters.json'
+
 def load_resources():
-    with open('../model/tokenizer.pickle', 'rb') as handle:
+    with open(tokenizer_path, 'rb') as handle:
         tokenizer = pickle.load(handle)
-    with open('../model/config.json', 'r') as f:
+    with open(parameters_path, 'r') as f:
         config = json.load(f)
     return tokenizer, config
 
@@ -43,7 +46,3 @@ def predict_toxicity(text): #Prediction function
         print(f"The text sample provided is classified as: {positive_classes}")
 
     return binary_prediction, positive_classes
-
-
-
-
