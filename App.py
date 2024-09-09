@@ -25,31 +25,27 @@ tokenizer, config = load_cached_resources()
 
 # ---------------------- Helper Functions ----------------------
 
-def classify_single_comment(comment):
-    """Classify a single comment and return results."""
+def classify_single_comment(comment, threshold=0.55):
+    """Classify a single comment and return results above threshold."""
     input_sequence = prepare_input(comment, tokenizer, config)
     prediction = model.predict(input_sequence)[0]
-    return {label: float(pred) for label, pred in zip(config['label_columns'], prediction)}
+    result = {label: float(pred) for label, pred in zip(config['label_columns'], prediction) if float(pred) > threshold}
+    return result
 
-def display_classification_results(result, threshold=0.55):
-    """Display classification results and classes above threshold."""
-    st.write("Classification Results:")
-    for label, prob in result.items():
-        st.write(f"{label.capitalize()}: {prob:.2f}")
-    
-    above_threshold = {label: prob for label, prob in result.items() if prob > threshold}
-    if above_threshold:
-        st.write(f"\nClasses with probability > {threshold}:")
-        for label, prob in above_threshold.items():
+def display_classification_results(result):
+    """Display classification results for classes above threshold."""
+    if result:
+        st.write("This comment has been classified as (probability [%]):")
+        for label, prob in result.items():
             st.write(f"{label.capitalize()}: {prob:.2f}")
     else:
-        st.write(f"\nNo classes with probability > {threshold}")
+        st.write("The comment provided is ok")
 
-def process_excel_file(df):
-    """Process Excel file and return results dataframe."""
+def process_excel_file(df, threshold=0.55):
+    """Process Excel file and return results dataframe with probabilities above threshold."""
     results = []
     for comment in df['comment']:
-        result = classify_single_comment(comment)
+        result = classify_single_comment(comment, threshold)
         results.append(result)
     return pd.DataFrame(results)
 
@@ -60,7 +56,7 @@ def plot_class_distribution(results_df):
     st.subheader("Distribution of classes")
     fig, ax = plt.subplots()
     results_df.mean().plot(kind='bar', ax=ax)
-    plt.title("Average distribution of classes")
+    plt.title("Average distribution of classes (prob > 0.55)")
     plt.ylabel("Average probability")
     plt.xticks(rotation=45)
     st.pyplot(fig)
@@ -121,14 +117,17 @@ def main():
             if 'comment' in df.columns:
                 if st.button('Classify all comments'):
                     results_df = process_excel_file(df)
-                    st.write("Classification Results:")
+                    st.write("This comment has been classified as:")
                     st.dataframe(results_df)
 
-                    st.header("Insights")
-                    plot_class_distribution(results_df)
-                    display_most_toxic_comments(df, results_df)
-                    plot_comment_length_vs_toxicity(df, results_df)
-                    generate_toxic_wordcloud(df, results_df)
+                    if not results_df.empty:
+                        st.header("Insights")
+                        plot_class_distribution(results_df)
+                        display_most_toxic_comments(df, results_df)
+                        plot_comment_length_vs_toxicity(df, results_df)
+                        generate_toxic_wordcloud(df, results_df)
+                    else:
+                        st.write("No comments classified above the threshold.")
             else:
                 st.error("The Excel file must contain a column named 'comment'.")
 
