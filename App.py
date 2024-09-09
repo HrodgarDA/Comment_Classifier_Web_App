@@ -7,6 +7,15 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from Preprocessing import preprocess_text, predict_toxicity, load_resources, prepare_input
 
+# ---------------------- Applying Custom Theme ----------------------
+
+st.set_page_config(
+    page_title="My App",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 # ---------------------- Model and Resource Loading ----------------------
 
 @st.cache_resource
